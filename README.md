@@ -1,4 +1,10 @@
-# esp_bluetooth_provisioning
+
+# flutter_esp_ble_prov
+
+Note: Forked from https://pub.dev/packages/esp_bluetooth_provisioning according
+to MIT license. That package doesn't provide a github repository
+
+# Original README esp_bluetooth_provisioning
 
 A cross platform package for flutter to provision device.
 
@@ -54,8 +60,3 @@ Start Scanning on foreground.
 ```
     EspBleProvisioning().startProvisioning()
 ```
-
-
-
-
-
