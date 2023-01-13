@@ -1,15 +1,61 @@
-# flutter_esp_ble_prov
+# esp_bluetooth_provisioning
 
-A new Flutter plugin project.
+A cross platform package for flutter to provision device.
 
 ## Getting Started
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
 
-For help getting started with Flutter development, view the
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Installation
+
+```
+dependencies:
+  esp_bluetooth_provisioning:
+```
+
+#### Android Configuration
+
+Make use you have flutter_embedding v2 enabled. Add the following code on the manifest file inside `<application>` tag to enable embedding.
+
+```
+<meta-data
+    android:name="flutterEmbedding"
+    android:value="2" />
+```
+
+Also, use `io.flutter.embedding.android.FlutterActivity` as your FlutterActivity
+
+### Bluetooth Permission
+
+#### Ask permission
+
+```
+    EspBleProvisioning().requestPermission();
+```
+
+### Bluetooth Adapter State
+
+
+
+### Scanning
+
+Start Scanning on foreground.
+
+```
+    EspBleProvisioning().scanBluetoothDevice()
+```
+
+## Connecting to device
+
+```
+   EspBleProvisioning().connectToBluetoothDevice()
+```
+
+### Provisiong device
+```
+    EspBleProvisioning().startProvisioning()
+```
+
+
+
+
 
