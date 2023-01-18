@@ -1,7 +1,7 @@
 name: flutter_esp_ble_prov
 description: A new Flutter plugin project.
 version: 0.0.1
-homepage:
+repository: https://gitlab.com/afshar-oss/flutter_esp_ble_prov
 
 environment:
   sdk: '>=2.18.6 <3.0.0'
