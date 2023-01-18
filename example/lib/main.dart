@@ -198,41 +198,4 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future<String> getPasswordFor(BuildContext context, String ssid) {
-    final completer = Completer<String>();
-    final controller = TextEditingController();
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('passphrase for $ssid'),
-            content: TextField(
-              controller: controller,
-              decoration: InputDecoration(hintText: 'enter passphrase'),
-              obscureText: true,
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text('CANCEL'),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                    completer.complete(controller.text);
-                  });
-                },
-              ),
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                    completer.complete(controller.text);
-                  });
-                },
-              ),
-            ],
-          );
-        });
-    return completer.future;
-  }
 }
