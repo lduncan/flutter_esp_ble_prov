@@ -31,7 +31,6 @@ build/
 
 # android
 **/android/**/gradle-wrapper.jar
-**/android/**/gradle-wrapper.properties
 **/android/.gradle
 **/android/captures/
 **/android/gradlew
