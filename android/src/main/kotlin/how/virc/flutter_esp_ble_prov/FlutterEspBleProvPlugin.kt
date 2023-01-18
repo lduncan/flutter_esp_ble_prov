@@ -107,7 +107,7 @@ class Boss(val context: Context, val activity : Activity) {
     return devices[deviceName]
   }
 
-  fun connect(conn: BleConnector, callback: (ESPDevice) -> Unit) {
+  fun connect(conn: BleConnector, pop : String, callback: (ESPDevice) -> Unit) {
     lastConn = conn
     val esp = create()
     EventBus.getDefault().register(object {
@@ -117,7 +117,7 @@ class Boss(val context: Context, val activity : Activity) {
         when (event.eventType) {
           ESPConstants.EVENT_DEVICE_CONNECTED -> {
             EventBus.getDefault().unregister(this)
-            esp.proofOfPossession = "abcd1234"
+            esp.proofOfPossession = pop
             callback(esp)
           }
         }
@@ -151,7 +151,9 @@ class BleScanManager(boss: Boss) : ActionManager(boss) {
       12345
     )
     boss.d("searchBleEspDevices: start")
-    boss.provisionManager.searchBleEspDevices("PROV_", object : BleScanListener{
+    val prefix = ctx.arg("prefix") ?: return
+
+    boss.provisionManager.searchBleEspDevices(prefix, object : BleScanListener{
       override fun scanStartFailed() {
         TODO("Not yet implemented")
       }
@@ -179,9 +181,10 @@ class BleScanManager(boss: Boss) : ActionManager(boss) {
 class WifiScanManager(boss: Boss) : ActionManager(boss) {
   override fun call(ctx: CallContext) {
     val name = ctx.arg("deviceName") ?: return
+    val proofOfPossession = ctx.arg("proofOfPossession") ?: return
     val conn = boss.connector(name) ?: return
     boss.d("esp connect: start")
-    boss.connect(conn) { esp ->
+    boss.connect(conn, proofOfPossession) { esp ->
       boss.d("scanNetworks: start")
       esp.scanNetworks(
         object : WiFiScanListener {
@@ -209,13 +212,15 @@ class WifiScanManager(boss: Boss) : ActionManager(boss) {
 
 class WifiProvisionManager(boss: Boss) : ActionManager(boss) {
   override fun call(ctx: CallContext) {
-    //var deviceName = ctx.arg("deviceName") ?: return
-    var ssid = ctx.arg("ssid") ?: return
-    var passphrase = ctx.arg("passphrase") ?: return
+    boss.e("provisionWifi ${ctx.call.arguments}")
+    val ssid = ctx.arg("ssid") ?: return
+    val passphrase = ctx.arg("passphrase") ?: return
+    val deviceName = ctx.arg("deviceName") ?: return
+    val proofOfPossession = ctx.arg("proofOfPossession") ?: return
+    val conn = boss.connector(deviceName) ?: return
 
-    boss.connect(boss.lastConn) { esp ->
+    boss.connect(conn, proofOfPossession) { esp ->
       boss.d("provision: start")
-      esp.proofOfPossession = "abcd1234"
       esp.provision(ssid, passphrase, object : ProvisionListener{
         override fun createSessionFailed(e: java.lang.Exception?) {
           boss.e("wifiprovision createSessionFailed")
