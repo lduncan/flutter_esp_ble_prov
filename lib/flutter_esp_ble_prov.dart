@@ -1,4 +1,4 @@
-import 'flutter_esp_ble_prov_platform_interface.dart';
+import 'src/flutter_esp_ble_prov_platform_interface.dart';
 
 class FlutterEspBleProv {
   Future<String?> getPlatformVersion() {
@@ -9,11 +9,15 @@ class FlutterEspBleProv {
     return FlutterEspBleProvPlatform.instance.scanBleDevices(prefix);
   }
 
-  Future<List<String>> scanWifiNetworks( String deviceName, String proofOfPosession) {
-    return FlutterEspBleProvPlatform.instance.scanWifiNetworks(deviceName, proofOfPosession);
+  Future<List<String>> scanWifiNetworks(
+      String deviceName, String proofOfPosession) {
+    return FlutterEspBleProvPlatform.instance
+        .scanWifiNetworks(deviceName, proofOfPosession);
   }
 
-  Future<bool> provisionWifi( String deviceName, String proofOfPosession, String ssid, String passphrase) {
-    return FlutterEspBleProvPlatform.instance.provisionWifi(deviceName, proofOfPosession, ssid, passphrase);
+  Future<bool> provisionWifi(String deviceName, String proofOfPosession,
+      String ssid, String passphrase) {
+    return FlutterEspBleProvPlatform.instance
+        .provisionWifi(deviceName, proofOfPosession, ssid, passphrase);
   }
 }

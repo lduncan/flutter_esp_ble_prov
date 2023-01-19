@@ -26,34 +26,45 @@ class _MyAppState extends State<MyApp> {
 
   String selectedDeviceName = '';
   String selectedSsid = '';
+  String feedbackMessage = '';
 
   final prefixController = TextEditingController(text: 'PROV_');
   final proofOfPossessionController = TextEditingController(text: 'abcd1234');
   final passphraseController = TextEditingController();
 
-  scanBleDevices() async {
+  Future scanBleDevices() async {
     final prefix = prefixController.text;
     final scannedDevices =
         await _flutterEspBleProvPlugin.scanBleDevices(prefix);
     setState(() {
       devices = scannedDevices;
     });
+    pushFeedback('Success: scanned BLE devices');
   }
 
-  scanWifiNetworks() async {
+  Future scanWifiNetworks() async {
     final proofOfPossession = proofOfPossessionController.text;
     final scannedNetworks = await _flutterEspBleProvPlugin.scanWifiNetworks(
         selectedDeviceName, proofOfPossession);
     setState(() {
       networks = scannedNetworks;
     });
+    pushFeedback('Success: scanned WiFi on $selectedDeviceName');
   }
 
-  provisionWifi() async {
+  Future provisionWifi() async {
     final proofOfPossession = proofOfPossessionController.text;
     final passphrase = passphraseController.text;
     final success = await _flutterEspBleProvPlugin.provisionWifi(
         selectedDeviceName, proofOfPossession, selectedSsid, passphrase);
+    pushFeedback(
+        'Success: provisioned WiFi $selectedDeviceName on $selectedSsid');
+  }
+
+  pushFeedback(String msg) {
+    setState(() {
+      feedbackMessage = feedbackMessage + '\n' + msg;
+    });
   }
 
   @override
@@ -64,10 +75,21 @@ class _MyAppState extends State<MyApp> {
           title: const Text('ESP BLE Provisioning Example'),
           actions: [
             IconButton(
-              icon: Icon(Icons.bluetooth),
-              onPressed: () => scanBleDevices(),
-            ),
+                icon: Icon(Icons.bluetooth),
+                onPressed: () async {
+                  await scanBleDevices();
+                }),
           ],
+        ),
+        bottomSheet: Container(
+          width: double.infinity,
+          color: Colors.black87,
+          padding: EdgeInsets.all(PAD),
+          child: Text(
+            feedbackMessage,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.green.shade600),
+          ),
         ),
         body: Container(
           child: Column(
@@ -114,9 +136,9 @@ class _MyAppState extends State<MyApp> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onTap: () {
+                      onTap: () async {
                         selectedDeviceName = devices[i];
-                        scanWifiNetworks();
+                        await scanWifiNetworks();
                       },
                     );
                   },
@@ -161,9 +183,9 @@ class _MyAppState extends State<MyApp> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onTap: () {
+                      onTap: () async {
                         selectedSsid = networks[i];
-                        provisionWifi();
+                        await provisionWifi();
                       },
                     );
                   },
@@ -197,5 +219,4 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
 }
