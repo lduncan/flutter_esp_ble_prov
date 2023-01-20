@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_esp_ble_prov/flutter_esp_ble_prov.dart';
 
 void main() {
@@ -18,8 +17,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _flutterEspBleProvPlugin = FlutterEspBleProv();
 
-  final PAD = 12.0;
-  final DEVICE_PREFIX = 'PROV';
+  final defaultPadding = 12.0;
+  final defaultDevicePrefix = 'PROV';
 
   List<String> devices = [];
   List<String> networks = [];
@@ -55,7 +54,7 @@ class _MyAppState extends State<MyApp> {
   Future provisionWifi() async {
     final proofOfPossession = proofOfPossessionController.text;
     final passphrase = passphraseController.text;
-    final success = await _flutterEspBleProvPlugin.provisionWifi(
+    await _flutterEspBleProvPlugin.provisionWifi(
         selectedDeviceName, proofOfPossession, selectedSsid, passphrase);
     pushFeedback(
         'Success: provisioned WiFi $selectedDeviceName on $selectedSsid');
@@ -63,7 +62,7 @@ class _MyAppState extends State<MyApp> {
 
   pushFeedback(String msg) {
     setState(() {
-      feedbackMessage = feedbackMessage + '\n' + msg;
+      feedbackMessage = '$feedbackMessage\n$msg';
     });
   }
 
@@ -75,7 +74,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('ESP BLE Provisioning Example'),
           actions: [
             IconButton(
-                icon: Icon(Icons.bluetooth),
+                icon: const Icon(Icons.bluetooth),
                 onPressed: () async {
                   await scanBleDevices();
                 }),
@@ -84,7 +83,7 @@ class _MyAppState extends State<MyApp> {
         bottomSheet: Container(
           width: double.infinity,
           color: Colors.black87,
-          padding: EdgeInsets.all(PAD),
+          padding: EdgeInsets.all(defaultPadding),
           child: Text(
             feedbackMessage,
             style: TextStyle(
@@ -92,6 +91,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         body: Container(
+          padding: EdgeInsets.all(defaultPadding),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -99,19 +99,19 @@ class _MyAppState extends State<MyApp> {
             children: [
               Flexible(
                 child: Container(
-                  padding: EdgeInsets.all(PAD),
+                  padding: EdgeInsets.all(defaultPadding),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: Text('Device Prefix'),
                       ),
                       Expanded(
                         child: TextField(
                           controller: prefixController,
-                          decoration:
-                              InputDecoration(hintText: 'enter device prefix'),
+                          decoration: const InputDecoration(
+                              hintText: 'enter device prefix'),
                         ),
                       ),
                     ],
@@ -120,8 +120,8 @@ class _MyAppState extends State<MyApp> {
               ),
               Flexible(
                 child: Container(
-                  padding: EdgeInsets.all(PAD),
-                  child: Text('BLE devices'),
+                  padding: EdgeInsets.all(defaultPadding),
+                  child: const Text('BLE devices'),
                 ),
               ),
               Expanded(
@@ -146,18 +146,18 @@ class _MyAppState extends State<MyApp> {
               ),
               Flexible(
                 child: Container(
-                  padding: EdgeInsets.all(PAD),
+                  padding: EdgeInsets.all(defaultPadding),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: Text('Proof of possession'),
                       ),
                       Expanded(
                         child: TextField(
                           controller: proofOfPossessionController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               hintText: 'enter proof of possession string'),
                         ),
                       ),
@@ -167,8 +167,8 @@ class _MyAppState extends State<MyApp> {
               ),
               Flexible(
                 child: Container(
-                  padding: EdgeInsets.all(PAD),
-                  child: Text('WiFi networks'),
+                  padding: EdgeInsets.all(defaultPadding),
+                  child: const Text('WiFi networks'),
                 ),
               ),
               Expanded(
@@ -193,19 +193,19 @@ class _MyAppState extends State<MyApp> {
               ),
               Flexible(
                 child: Container(
-                  padding: EdgeInsets.all(PAD),
+                  padding: EdgeInsets.all(defaultPadding),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: Text('WiFi Passphrase'),
                       ),
                       Expanded(
                         child: TextField(
                           controller: passphraseController,
-                          decoration:
-                              InputDecoration(hintText: 'enter passphrase'),
+                          decoration: const InputDecoration(
+                              hintText: 'enter passphrase'),
                           obscureText: true,
                         ),
                       ),

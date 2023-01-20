@@ -53,7 +53,7 @@ class MethodChannelFlutterEspBleProv extends FlutterEspBleProvPlatform {
       'ssid': ssid,
       'passphrase': passphrase
     };
-    final raw = await methodChannel.invokeMethod<bool?>('provisionWifi', args);
+    await methodChannel.invokeMethod<bool?>('provisionWifi', args);
     return true;
   }
 }
