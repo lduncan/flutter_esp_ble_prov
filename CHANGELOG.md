@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Minor updates
+
 ## 0.0.3
 
 * Minor updates

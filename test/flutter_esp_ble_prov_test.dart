@@ -7,13 +7,13 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockFlutterEspBleProvPlatform
     with MockPlatformInterfaceMixin
     implements FlutterEspBleProvPlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }
 
 void main() {
-  final FlutterEspBleProvPlatform initialPlatform = FlutterEspBleProvPlatform.instance;
+  final FlutterEspBleProvPlatform initialPlatform =
+      FlutterEspBleProvPlatform.instance;
 
   test('$MethodChannelFlutterEspBleProv is the default instance', () {
     expect(initialPlatform, isInstanceOf<MethodChannelFlutterEspBleProv>());
@@ -21,7 +21,8 @@ void main() {
 
   test('getPlatformVersion', () async {
     FlutterEspBleProv flutterEspBleProvPlugin = FlutterEspBleProv();
-    MockFlutterEspBleProvPlatform fakePlatform = MockFlutterEspBleProvPlatform();
+    MockFlutterEspBleProvPlatform fakePlatform =
+        MockFlutterEspBleProvPlatform();
     FlutterEspBleProvPlatform.instance = fakePlatform;
 
     expect(await flutterEspBleProvPlugin.getPlatformVersion(), '42');
