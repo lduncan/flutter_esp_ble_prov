@@ -2,7 +2,6 @@ import 'src/flutter_esp_ble_prov_platform_interface.dart';
 
 /// Plugin provides core functionality to provision ESP32 devices over BLE
 class FlutterEspBleProv {
-
   /// Initiates a scan of BLE devices with the given [prefix].
   ///
   /// ESP32 Arduino demo defaults this value to "PROV_"
@@ -34,5 +33,4 @@ class FlutterEspBleProv {
   Future<String?> getPlatformVersion() {
     return FlutterEspBleProvPlatform.instance.getPlatformVersion();
   }
-
 }
