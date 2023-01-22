@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Correct version-based permission handling on Android
+
 ## 0.0.5
 
 * Minor updates
