@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import com.espressif.provisioning.DeviceConnectionEvent
 import com.espressif.provisioning.ESPConstants
@@ -33,12 +32,19 @@ import io.flutter.plugin.common.PluginRegistry
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 
 
+/**
+ * The data required to be able to connect to an Espressif BLE device.
+ *
+ * @param device The BLE device from a BLE scan
+ * @param scanResult The ScanResult from a BLE scan
+ */
 class BleConnector(val device: BluetoothDevice, scanResult: ScanResult) {
 
+  /**
+   * The service ID used when connecting
+   */
   val primaryServiceUuid: String
 
   init {
@@ -47,8 +53,15 @@ class BleConnector(val device: BluetoothDevice, scanResult: ScanResult) {
 }
 
 
+/**
+ * Combined context from a method channel call from the Flutter side.
+ */
 class CallContext(val call: MethodCall, val result: Result) {
 
+  /**
+   * Extracts an argument's value from the method call, and returns an error condition if it is not
+   * present.
+   */
   fun arg(name: String): String? {
     val v = call.argument<String>(name)
     if (v == null) {
@@ -60,28 +73,47 @@ class CallContext(val call: MethodCall, val result: Result) {
 }
 
 
+/**
+ * Allows for asynchronously requesting permissions based on platform version.
+ *
+ * The version switch is required because Bluetooth permission requirements changed at S (31).
+ */
 class PermissionManager(val boss: Boss) : PluginRegistry.RequestPermissionsResultListener {
 
-  lateinit var callback : (Boolean) -> Unit
+  lateinit var callback: (Boolean) -> Unit
 
-  val permissions : Array<String> get() {
-    // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
-    boss.e("${Build.VERSION.SDK_INT >= Build.VERSION_CODES.S}")
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      arrayOf(Manifest.permission.BLUETOOTH_SCAN,
-              Manifest.permission.BLUETOOTH_CONNECT)
-    } else {
-      arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-              Manifest.permission.BLUETOOTH,
-              Manifest.permission.BLUETOOTH_ADMIN)
+  val callbacks = mutableMapOf<Int, (Boolean) -> Unit>()
+
+  /**
+   * Required permissions for the current version of the SDK.
+   */
+  val permissions: Array<String>
+    get() {
+      // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        arrayOf(
+          Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT
+        )
+      } else {
+        arrayOf(
+          Manifest.permission.ACCESS_FINE_LOCATION,
+          Manifest.permission.BLUETOOTH,
+          Manifest.permission.BLUETOOTH_ADMIN
+        )
+      }
     }
-  }
 
-  fun ensure(fCallback : (Boolean) -> Unit) {
+  /**
+   * Check permissions are granted and request them otherwise.
+   */
+  fun ensure(fCallback: (Boolean) -> Unit) {
     callback = fCallback
-    val toRequest : MutableList<String> = mutableListOf()
+    val toRequest: MutableList<String> = mutableListOf()
     for (p in permissions) {
-      if (ActivityCompat.checkSelfPermission(boss.platformActivity, p) != PackageManager.PERMISSION_GRANTED) {
+      if (ActivityCompat.checkSelfPermission(
+          boss.platformActivity, p
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
         toRequest.add(p)
       }
     }
@@ -92,10 +124,11 @@ class PermissionManager(val boss: Boss) : PluginRegistry.RequestPermissionsResul
     }
   }
 
+  /**
+   * Called on permission request result.
+   */
   override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<out String>,
-    grantResults: IntArray
+    requestCode: Int, permissions: Array<out String>, grantResults: IntArray
   ): Boolean {
     boss.d("permission result")
     callback(true)
@@ -109,18 +142,34 @@ abstract class ActionManager(val boss: Boss) {
 }
 
 
+/**
+ * Overall controller for method handling and state.
+ *
+ * Everything is asynchronous here, and this class handles that stuff through a series of
+ * "manager" classes.
+ */
 class Boss {
 
   private val logTag = "FlutterEspBleProv"
+
+  // Method names as called from Flutter across the channel.
   private val scanBleMethod = "scanBleDevices"
   private val scanWifiMethod = "scanWifiNetworks"
   private val provisionWifiMethod = "provisionWifi"
   private val platformVersionMethod = "getPlatformVersion"
 
-  val devices = mutableMapOf<String, BleConnector>();
-  val networks = mutableSetOf<String>();
+  /**
+   * The available scanned BLE devices.
+   */
+  val devices = mutableMapOf<String, BleConnector>()
 
-  private val permissionManager : PermissionManager = PermissionManager(this)
+  /**
+   * The available WiFi networks for the most recently scanned BLE device.
+   */
+  val networks = mutableSetOf<String>()
+
+  // Managers performing the various actions
+  private val permissionManager: PermissionManager = PermissionManager(this)
   private val bleScanner: BleScanManager = BleScanManager(this)
   private val wifiScanner: WifiScanManager = WifiScanManager(this)
   private val wifiProvisioner: WifiProvisionManager = WifiProvisionManager(this)
@@ -130,15 +179,19 @@ class Boss {
 
   val espManager: ESPProvisionManager get() = ESPProvisionManager.getInstance(platformContext)
 
+  // Logging shortcuts
   fun d(msg: String) = Log.d(logTag, msg)
   fun e(msg: String) = Log.e(logTag, msg)
   fun i(msg: String) = Log.i(logTag, msg)
-
 
   fun connector(deviceName: String): BleConnector? {
     return devices[deviceName]
   }
 
+  /**
+   * Connect to a named device with proofOfPossession string, and once connected, execute the
+   * callback.
+   */
   fun connect(
     conn: BleConnector, proofOfPossession: String, onConnectCallback: (ESPDevice) -> Unit
   ) {
@@ -162,7 +215,7 @@ class Boss {
   }
 
   fun call(call: MethodCall, result: Result) {
-    permissionManager.ensure(fun (_: Boolean) {
+    permissionManager.ensure(fun(_: Boolean) {
       val ctx = CallContext(call, result)
       when (call.method) {
         platformVersionMethod -> getPlatformVersion(ctx)
@@ -175,7 +228,7 @@ class Boss {
   }
 
   private fun getPlatformVersion(ctx: CallContext) {
-    ctx.result.success("Android ${android.os.Build.VERSION.RELEASE}")
+    ctx.result.success("Android ${Build.VERSION.RELEASE}")
   }
 
   fun attachActivity(activity: Activity) {
@@ -185,8 +238,8 @@ class Boss {
   fun attachContext(context: Context) {
     platformContext = context
   }
-  
-  fun attachBinding(binding : ActivityPluginBinding) {
+
+  fun attachBinding(binding: ActivityPluginBinding) {
     binding.addRequestPermissionsResultListener(permissionManager)
   }
 }
@@ -238,7 +291,6 @@ class WifiScanManager(boss: Boss) : ActionManager(boss) {
           wifiList.forEach { boss.networks.add(it.wifiName) }
           boss.d("scanNetworks: complete ${boss.networks}")
           Handler(Looper.getMainLooper()).post {
-            // Call the desired channel message here.
             ctx.result.success(ArrayList<String>(boss.networks))
           }
           boss.d("scanNetworks: complete 2 ${boss.networks}")
@@ -309,16 +361,11 @@ class WifiProvisionManager(boss: Boss) : ActionManager(boss) {
 
 /** FlutterEspBleProvPlugin */
 class FlutterEspBleProvPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
-  PluginRegistry.ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
+  PluginRegistry.ActivityResultListener {
 
   private val logTag = "FlutterEspBleProvChannel"
   private val boss = Boss()
   private lateinit var channel: MethodChannel
-
 
   override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     Log.d(logTag, "onAttachedToEngine: $binding")
@@ -359,13 +406,6 @@ class FlutterEspBleProvPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
     Log.d(logTag, "onActivityResult $requestCode $resultCode $data")
     return false
-  }
-
-  override fun onRequestPermissionsResult(
-    requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-  ): Boolean {
-    Log.d(logTag, "onPermissionResult $requestCode $permissions $grantResults")
-    return true
   }
 
 }
