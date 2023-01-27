@@ -83,6 +83,7 @@ class PermissionManager(val boss: Boss) : PluginRegistry.RequestPermissionsResul
   lateinit var callback: (Boolean) -> Unit
 
   val callbacks = mutableMapOf<Int, (Boolean) -> Unit>()
+  var lastCallbackId = 0
 
   /**
    * Required permissions for the current version of the SDK.
