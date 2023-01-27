@@ -17,11 +17,21 @@ See the example.
 
 Add to your Info.plist Bluetooth permissions
 ```
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
+<key>NSBluetoothAlwaysUsageDescription</key>
+<string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
 ```
 
+## Android
+
+Bluetooth permissions on Android changed at S (31) so some creative behaviour is
+required in the manifest. This is all [documented](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions) which the library requests on your behalf.
+
 # Notes
+
+## Library embedding
+
+Currently we embed the Espressif Android library in libs because Jitpack
+fetching doesn't work and we can't 
 
 ## Alternatives
 
