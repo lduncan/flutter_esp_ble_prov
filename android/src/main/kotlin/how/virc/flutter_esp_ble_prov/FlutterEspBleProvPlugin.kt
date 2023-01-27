@@ -341,6 +341,7 @@ class WifiProvisionManager(boss: Boss) : ActionManager(boss) {
 
         override fun provisioningFailedFromDevice(failureReason: ESPConstants.ProvisionFailureReason?) {
           boss.e("provisioningFailedFromDevice $failureReason")
+          ctx.result.success(false)
         }
 
         override fun deviceProvisioningSuccess() {

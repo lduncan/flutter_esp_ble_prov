@@ -45,7 +45,7 @@ class MethodChannelFlutterEspBleProv extends FlutterEspBleProvPlatform {
   }
 
   @override
-  Future<bool> provisionWifi(String deviceName, String proofOfPossession,
+  Future<bool?> provisionWifi(String deviceName, String proofOfPossession,
       String ssid, String passphrase) async {
     final args = {
       'deviceName': deviceName,
@@ -53,7 +53,6 @@ class MethodChannelFlutterEspBleProv extends FlutterEspBleProvPlatform {
       'ssid': ssid,
       'passphrase': passphrase
     };
-    await methodChannel.invokeMethod<bool?>('provisionWifi', args);
-    return true;
+    return await methodChannel.invokeMethod<bool?>('provisionWifi', args);
   }
 }

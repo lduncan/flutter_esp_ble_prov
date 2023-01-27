@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_esp_ble_prov/src/flutter_esp_ble_prov_method_channel.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_esp_ble_prov/flutter_esp_ble_prov_method_channel.dart';
 
 void main() {
   MethodChannelFlutterEspBleProv platform = MethodChannelFlutterEspBleProv();
