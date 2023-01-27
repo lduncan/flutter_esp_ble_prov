@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Add iOS support
+
 ## 0.0.6
 
 * Correct version-based permission handling on Android
