@@ -10,6 +10,16 @@ protocol over BLE.
 
 See the example.
 
+## Requirements
+
+## iOS
+ - iOS 13.0+
+
+Add to your Info.plist Bluetooth permissions
+```
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
+```
 
 # Notes
 

@@ -80,140 +80,144 @@ class _MyAppState extends State<MyApp> {
                 }),
           ],
         ),
-        bottomSheet: Container(
-          width: double.infinity,
-          color: Colors.black87,
-          padding: EdgeInsets.all(defaultPadding),
-          child: Text(
-            feedbackMessage,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.green.shade600),
+        bottomSheet: SafeArea(
+          child: Container(
+            width: double.infinity,
+            color: Colors.black87,
+            padding: EdgeInsets.all(defaultPadding),
+            child: Text(
+              feedbackMessage,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.green.shade600),
+            ),
           ),
         ),
-        body: Container(
-          padding: EdgeInsets.all(defaultPadding),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Flexible(
-                child: Container(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Flexible(
-                        child: Text('Device Prefix'),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: prefixController,
-                          decoration: const InputDecoration(
-                              hintText: 'enter device prefix'),
+        body: SafeArea(
+          child: Container(
+            padding: EdgeInsets.all(defaultPadding),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Flexible(
+                          child: Text('Device Prefix'),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: TextField(
+                            controller: prefixController,
+                            decoration: const InputDecoration(
+                                hintText: 'enter device prefix'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Flexible(
-                child: Container(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: const Text('BLE devices'),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: devices.length,
-                  itemBuilder: (context, i) {
-                    return ListTile(
-                      title: Text(
-                        devices[i],
-                        style: TextStyle(
-                          color: Colors.blue.shade700,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onTap: () async {
-                        selectedDeviceName = devices[i];
-                        await scanWifiNetworks();
-                      },
-                    );
-                  },
-                ),
-              ),
-              Flexible(
-                child: Container(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Flexible(
-                        child: Text('Proof of possession'),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: proofOfPossessionController,
-                          decoration: const InputDecoration(
-                              hintText: 'enter proof of possession string'),
-                        ),
-                      ),
-                    ],
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: const Text('BLE devices'),
                   ),
                 ),
-              ),
-              Flexible(
-                child: Container(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: const Text('WiFi networks'),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: networks.length,
-                  itemBuilder: (context, i) {
-                    return ListTile(
-                      title: Text(
-                        networks[i],
-                        style: TextStyle(
-                          color: Colors.green.shade700,
-                          fontWeight: FontWeight.bold,
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: devices.length,
+                    itemBuilder: (context, i) {
+                      return ListTile(
+                        title: Text(
+                          devices[i],
+                          style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      onTap: () async {
-                        selectedSsid = networks[i];
-                        await provisionWifi();
-                      },
-                    );
-                  },
-                ),
-              ),
-              Flexible(
-                child: Container(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Flexible(
-                        child: Text('WiFi Passphrase'),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: passphraseController,
-                          decoration: const InputDecoration(
-                              hintText: 'enter passphrase'),
-                          obscureText: true,
-                        ),
-                      ),
-                    ],
+                        onTap: () async {
+                          selectedDeviceName = devices[i];
+                          await scanWifiNetworks();
+                        },
+                      );
+                    },
                   ),
                 ),
-              ),
-            ],
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Flexible(
+                          child: Text('Proof of possession'),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: proofOfPossessionController,
+                            decoration: const InputDecoration(
+                                hintText: 'enter proof of possession string'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: const Text('WiFi networks'),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: networks.length,
+                    itemBuilder: (context, i) {
+                      return ListTile(
+                        title: Text(
+                          networks[i],
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onTap: () async {
+                          selectedSsid = networks[i];
+                          await provisionWifi();
+                        },
+                      );
+                    },
+                  ),
+                ),
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Flexible(
+                          child: Text('WiFi Passphrase'),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: passphraseController,
+                            decoration: const InputDecoration(
+                                hintText: 'enter passphrase'),
+                            obscureText: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
