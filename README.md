@@ -1,8 +1,6 @@
 
 # flutter_esp_ble_prov
 
-*this is alpha software*
-
 Plugin for provisioning ESP32 Devices over BLE (Bluetooth Low Energy).
 
 This library uses Espressif-provided provisioning libraries for their custom
@@ -33,7 +31,7 @@ required in the manifest. This is all [documented](https://developer.android.com
 Currently we embed the Espressif Android library in libs because Jitpack
 fetching doesn't work and we can't 
 
-## Alternatives
+## Alternative Library
 
 *  https://pub.dev/packages/esp_bluetooth_provisioning This plugin uses
    Espressif's libraries but has no source repository, is unmaintained,

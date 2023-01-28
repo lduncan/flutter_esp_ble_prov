@@ -1,6 +1,11 @@
+## 0.1.1
+
+* Minor Updates
+
 ## 0.1.0
 
 * Add iOS support
+* Bump minor version, we are now feature complete
 
 ## 0.0.6
 
