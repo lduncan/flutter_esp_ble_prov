@@ -1,3 +1,8 @@
+## 0.1.3
+
+* Add additional provisioning states
+* Remove requirement for embedded library
+
 ## 0.1.2
 
 * Update to flutter stable 3.7.0
