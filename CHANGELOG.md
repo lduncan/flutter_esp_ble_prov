@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Update to flutter stable 3.7.0
+
 ## 0.1.1
 
 * Minor Updates
