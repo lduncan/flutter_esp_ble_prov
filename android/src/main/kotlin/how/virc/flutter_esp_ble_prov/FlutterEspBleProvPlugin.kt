@@ -330,14 +330,17 @@ class WifiProvisionManager(boss: Boss) : ActionManager(boss) {
 
         override fun wifiConfigFailed(e: java.lang.Exception?) {
           boss.e("wifiConfiFailed $e")
+          ctx.result.success(false)
         }
 
         override fun wifiConfigApplied() {
           boss.d("wifiConfigApplied")
+          ctx.result.success(true)
         }
 
         override fun wifiConfigApplyFailed(e: java.lang.Exception?) {
           boss.e("wifiConfigApplyFailed $e")
+          ctx.result.success(false)
         }
 
         override fun provisioningFailedFromDevice(failureReason: ESPConstants.ProvisionFailureReason?) {
@@ -352,6 +355,7 @@ class WifiProvisionManager(boss: Boss) : ActionManager(boss) {
 
         override fun onProvisioningFailed(e: java.lang.Exception?) {
           boss.e("onProvisioningFailed")
+          ctx.result.success(false)
         }
 
       })
