@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Fixed missing dependencies
+
 ## 0.1.3
 
 * Add additional provisioning states
