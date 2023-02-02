@@ -21,6 +21,21 @@ Add to your Info.plist Bluetooth permissions
 
 ## Android
 
+In your `android/app/build.gradle` make sure your minSdkVersion it's 23 or above.
+
+Add to `androud/build.gradle` repositories the following repository `maven { url ("https://jitpack.io/") }`
+It should look something like this:
+
+```
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url ("https://jitpack.io/") }
+    }
+}
+```
+
 Bluetooth permissions on Android changed at S (31) so some creative behaviour is
 required in the manifest. This is all [documented](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions) which the library requests on your behalf.
 
