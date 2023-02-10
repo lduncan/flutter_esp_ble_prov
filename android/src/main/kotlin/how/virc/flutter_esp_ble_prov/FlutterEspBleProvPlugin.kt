@@ -13,11 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import com.espressif.provisioning.DeviceConnectionEvent
-import com.espressif.provisioning.ESPConstants
-import com.espressif.provisioning.ESPDevice
-import com.espressif.provisioning.ESPProvisionManager
-import com.espressif.provisioning.WiFiAccessPoint
+import com.espressif.provisioning.*
 import com.espressif.provisioning.listeners.BleScanListener
 import com.espressif.provisioning.listeners.ProvisionListener
 import com.espressif.provisioning.listeners.WiFiScanListener
@@ -92,15 +88,9 @@ class PermissionManager(val boss: Boss) : PluginRegistry.RequestPermissionsResul
     get() {
       // https://developer.android.com/guide/topics/connectivity/bluetooth/permissions
       return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        arrayOf(
-          Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT
-        )
+        arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
       } else {
-        arrayOf(
-          Manifest.permission.ACCESS_FINE_LOCATION,
-          Manifest.permission.BLUETOOTH,
-          Manifest.permission.BLUETOOTH_ADMIN
-        )
+        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN)
       }
     }
 
@@ -111,10 +101,7 @@ class PermissionManager(val boss: Boss) : PluginRegistry.RequestPermissionsResul
     callback = fCallback
     val toRequest: MutableList<String> = mutableListOf()
     for (p in permissions) {
-      if (ActivityCompat.checkSelfPermission(
-          boss.platformActivity, p
-        ) != PackageManager.PERMISSION_GRANTED
-      ) {
+      if (ActivityCompat.checkSelfPermission(boss.platformActivity, p) != PackageManager.PERMISSION_GRANTED) {
         toRequest.add(p)
       }
     }
@@ -128,11 +115,11 @@ class PermissionManager(val boss: Boss) : PluginRegistry.RequestPermissionsResul
   /**
    * Called on permission request result.
    */
-  override fun onRequestPermissionsResult(
-    requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-  ): Boolean {
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
     boss.d("permission result")
-    callback(true)
+    if (this::callback.isInitialized) {
+      callback(true)
+    }
     return true
   }
 }
@@ -193,12 +180,8 @@ class Boss {
    * Connect to a named device with proofOfPossession string, and once connected, execute the
    * callback.
    */
-  fun connect(
-    conn: BleConnector, proofOfPossession: String, onConnectCallback: (ESPDevice) -> Unit
-  ) {
-    val esp = espManager.createESPDevice(
-      ESPConstants.TransportType.TRANSPORT_BLE, ESPConstants.SecurityType.SECURITY_1
-    )
+  fun connect(conn: BleConnector, proofOfPossession: String, onConnectCallback: (ESPDevice) -> Unit) {
+    val esp = espManager.createESPDevice(ESPConstants.TransportType.TRANSPORT_BLE, ESPConstants.SecurityType.SECURITY_1)
     EventBus.getDefault().register(object {
       @Subscribe(threadMode = ThreadMode.MAIN)
       fun onEvent(event: DeviceConnectionEvent) {
@@ -242,6 +225,10 @@ class Boss {
 
   fun attachBinding(binding: ActivityPluginBinding) {
     binding.addRequestPermissionsResultListener(permissionManager)
+  }
+
+  fun detachBinding(binding: ActivityPluginBinding) {
+    binding.removeRequestPermissionsResultListener(permissionManager)
   }
 }
 
@@ -366,12 +353,12 @@ class WifiProvisionManager(boss: Boss) : ActionManager(boss) {
 
 
 /** FlutterEspBleProvPlugin */
-class FlutterEspBleProvPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
-  PluginRegistry.ActivityResultListener {
+class FlutterEspBleProvPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
 
   private val logTag = "FlutterEspBleProvChannel"
   private val boss = Boss()
   private lateinit var channel: MethodChannel
+  private var activityBinding: ActivityPluginBinding? = null
 
   override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     Log.d(logTag, "onAttachedToEngine: $binding")
@@ -392,21 +379,22 @@ class FlutterEspBleProvPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     Log.d(logTag, "onAttachedToActivity: $binding")
-    binding.addActivityResultListener(this)
-    boss.attachBinding(binding)
-    boss.attachActivity(binding.activity)
+    init(binding)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    TODO("Not yet implemented")
+    Log.d(logTag, "onDetachedFromActivityForConfigChanges")
+    activityBinding?.let { tearDown(it) }
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    TODO("Not yet implemented")
+    Log.d(logTag, "onReattachedToActivityForConfigChanges: $binding")
+    init(binding)
   }
 
   override fun onDetachedFromActivity() {
-    TODO("Not yet implemented")
+    Log.d(logTag, "onDetachedFromActivity")
+    activityBinding?.let { tearDown(it) }
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -414,4 +402,16 @@ class FlutterEspBleProvPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     return false
   }
 
+  private fun init(binding: ActivityPluginBinding) {
+    activityBinding = binding;
+    binding.addActivityResultListener(this)
+    boss.attachBinding(binding)
+    boss.attachActivity(binding.activity)
+  }
+
+  private fun tearDown(binding: ActivityPluginBinding) {
+    binding.removeActivityResultListener(this)
+    boss.detachBinding(binding)
+    activityBinding = null;
+  }
 }
