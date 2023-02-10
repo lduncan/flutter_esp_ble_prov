@@ -1,3 +1,7 @@
+## 0.1.5
+
+* Fix for permissions in Android >= T
+
 ## 0.1.4
 
 * Fixed missing dependencies
