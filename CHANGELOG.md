@@ -1,3 +1,7 @@
+## 0.1.6
+
+* Minor fixes
+
 ## 0.1.5
 
 * Fix for permissions in Android >= T
