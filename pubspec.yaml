@@ -3,7 +3,7 @@ description: |
   Provision WiFi on Espressif ESP32 devices over BLE. This library
   uses Espressif-provided provisioning libraries for their custom
   protocol over BLE.
-version: 0.1.6
+version: 0.1.7
 repository: https://gitlab.com/afshar-oss/flutter_esp_ble_prov
 issue_tracker: https://gitlab.com/afshar-oss/flutter_esp_ble_prov/-/issues
 
